@@ -11,22 +11,22 @@ public class Chess
     static String playerTwo;//black
     static char activePlayer='w';
     static final String author="Anwar Saipul Rohmi";
-    static final char[]pawn={'K'/*king*/,'Q'/*queen*/,'R'/*rock*/,'B'/*bishop*/,'H'/*knight*/,'P'/*pawn*/,'k','q','r','b','h','p'};
-    static final char[]whitePawn={pawn[0],pawn[1],pawn[2],pawn[3],pawn[4],pawn[5]};
-    static final char[]blackPawn={pawn[6],pawn[7],pawn[8],pawn[9],pawn[10],pawn[11]};
+    static final char[]piece={'K'/*king*/,'Q'/*queen*/,'R'/*rock*/,'B'/*bishop*/,'H'/*knight*/,'P'/*pawn*/,'k','q','r','b','h','p'};
+    static final char[]whitePawn={piece[0],piece[1],piece[2],piece[3],piece[4],piece[5]};
+    static final char[]blackPawn={piece[6],piece[7],piece[8],piece[9],piece[10],piece[11]};
     static final char[]alphabetPos={'A','B','C','D','E','F','G','H'};
     static final int[]numberPos={1,2,3,4,5,6,7,8};
     static final char[]boardSymbol={'+','-'};
     static final char[][]referenceBoard=
     {
-        {pawn[8],pawn[10],pawn[9],pawn[7],pawn[6],pawn[9],pawn[10],pawn[8]},
-        {pawn[11],pawn[11],pawn[11],pawn[11],pawn[11],pawn[11],pawn[11],pawn[11]},
+        {piece[8],piece[10],piece[9],piece[7],piece[6],piece[9],piece[10],piece[8]},
+        {piece[11],piece[11],piece[11],piece[11],piece[11],piece[11],piece[11],piece[11]},
         {boardSymbol[0],boardSymbol[1],boardSymbol[0],boardSymbol[1],boardSymbol[0],boardSymbol[1],boardSymbol[0],boardSymbol[1]},
         {boardSymbol[1],boardSymbol[0],boardSymbol[1],boardSymbol[0],boardSymbol[1],boardSymbol[0],boardSymbol[1],boardSymbol[0]},
         {boardSymbol[0],boardSymbol[1],boardSymbol[0],boardSymbol[1],boardSymbol[0],boardSymbol[1],boardSymbol[0],boardSymbol[1]},
         {boardSymbol[1],boardSymbol[0],boardSymbol[1],boardSymbol[0],boardSymbol[1],boardSymbol[0],boardSymbol[1],boardSymbol[0]},
-        {pawn[5],pawn[5],pawn[5],pawn[5],pawn[5],pawn[5],pawn[5],pawn[5]},
-        {pawn[2],pawn[4],pawn[3],pawn[1],pawn[0],pawn[3],pawn[4],pawn[2]}
+        {piece[5],piece[5],piece[5],piece[5],piece[5],piece[5],piece[5],piece[5]},
+        {piece[2],piece[4],piece[3],piece[1],piece[0],piece[3],piece[4],piece[2]}
     };
     static final String titleArt=
                 "              ,,                                \r\n" + //
@@ -38,7 +38,8 @@ public class Chess
                 "`Mb.     ,'   MM    MM YM.    , L.   I8 L.   I8 \r\n" + //
                 "  `\"bmmmd'  .JMML  JMML.`Mbmmd' M9mmmP' M9mmmP' ";
     static char[][]board=referenceBoard;
-    static boolean debug=false;
+    static boolean debug=true;
+    static boolean allowFreeMovement=false;
     static Scanner scanner=new Scanner(System.in);
     public static void main(String[]arguments)
     {
@@ -47,8 +48,20 @@ public class Chess
     static void mainMenu()
     {
         displayTitle();
-        getPlayer();
-        program();
+        displayMenu();
+        int inputMenu=scanner.nextInt();
+        switch(inputMenu)
+        {
+            case 1:
+                playerOne=getPlayer(1);
+                playerTwo=getPlayer(2);
+                program();
+                break;
+            default:
+                System.out.println("Please insert a valid number!");
+                mainMenu();
+                break;
+        }
     }
     static void displayTitle()
     {
@@ -56,17 +69,31 @@ public class Chess
         System.out.println("===============================================");
         System.out.println("By : "+author);
     }
+    static void displayMenu()
+    {
+        System.out.println("1) Play");
+    }
     static void program()
     {
         displayBoard();
         program();
     }
-    static void getPlayer()
+    static String getPlayer(int x)
     {
-        System.out.println("Insert name of player one(white)");
-        playerOne=scanner.nextLine();
-        System.out.println("Insert name of player two(black)");
-        playerTwo=scanner.nextLine();
+        Scanner scanner1=new Scanner(System.in);
+        Scanner scanner2=new Scanner(System.in);
+        String player=new String();
+        if(x==1)
+        {
+            System.out.println("Insert name of player one(white)");
+            player=scanner1.nextLine();
+        }
+        else if(x==2)
+        {
+            System.out.println("Insert name of player two(black)");
+            player=scanner2.nextLine();
+        }
+        return player;
     }
     static void displayBoard()
     {
@@ -171,7 +198,6 @@ public class Chess
             {
                 for(int i=startData[0];i>targetData[0];i--)
                 {
-                    ++x;
                     int[]checktile={startData[0]-x,startData[1]};
                     char tile=tileChecker(checktile);
                     if(tile!='n'&&checktile[0]!=targetData[0]&&checktile[0]!=startData[0])
@@ -181,6 +207,7 @@ public class Chess
                         break;
                     }
                 }
+                x++;
                 if(check==false)
                 {
                     move(pawn,startData,targetData);
@@ -190,7 +217,6 @@ public class Chess
             {
                 for(int i=startData[1];i<targetData[1];i++)
                 {
-                    ++x;
                     int[]checktile={startData[0],startData[1]+x};
                     char tile=tileChecker(checktile);
                     if(tile!='n'&&checktile[1]!=targetData[1]&&checktile[1]!=startData[1])
@@ -200,6 +226,7 @@ public class Chess
                         break;
                     }
                 }
+                x++;
                 if(check==false)
                 {
                     move(pawn,startData,targetData);
@@ -209,7 +236,6 @@ public class Chess
             {
                 for(int i=startData[0];i<targetData[0];i++)
                 {
-                    ++x;
                     int[]checktile={startData[0]+x,startData[1]};
                     char tile=tileChecker(checktile);
                     if(tile!='n'&&checktile[0]!=targetData[0]&&checktile[0]!=startData[0])
@@ -219,6 +245,7 @@ public class Chess
                         break;
                     }
                 }
+                x++;
                 if(check==false)
                 {
                     move(pawn,startData,targetData);
@@ -228,7 +255,6 @@ public class Chess
             {
                 for(int i=startData[1];i>targetData[0];i--)
                 {
-                    ++x;
                     int[]checktile={startData[0],startData[1]-x};
                     char tile=tileChecker(checktile);
                     if(tile!='n'&&checktile[1]!=targetData[1]&&checktile[1]!=startData[1])
@@ -238,6 +264,7 @@ public class Chess
                         break;
                     }
                 }
+                x++;
                 if(check==false)
                 {
                     move(pawn,startData,targetData);
@@ -480,7 +507,6 @@ public class Chess
             {
                 for(int i=startData[0];i>targetData[0];i--)
                 {
-                    ++x;
                     int[]checktile={startData[0]-x,startData[1]};
                     char tile=tileChecker(checktile);
                     if(tile!='n'&&checktile[0]!=targetData[0]&&checktile[0]!=startData[0])
@@ -489,6 +515,7 @@ public class Chess
                         check=true;
                         break;
                     }
+                    x++;
                 }
                 if(check==false)
                 {
@@ -499,7 +526,6 @@ public class Chess
             {
                 for(int i=startData[1];i<targetData[1];i++)
                 {
-                    ++x;
                     int[]checktile={startData[0],startData[1]+x};
                     char tile=tileChecker(checktile);
                     if(tile!='n'&&checktile[1]!=targetData[1]&&checktile[1]!=startData[1])
@@ -508,6 +534,7 @@ public class Chess
                         check=true;
                         break;
                     }
+                    x++;
                 }
                 if(check==false)
                 {
@@ -518,7 +545,6 @@ public class Chess
             {
                 for(int i=startData[0];i<targetData[0];i++)
                 {
-                    ++x;
                     int[]checktile={startData[0]+x,startData[1]};
                     char tile=tileChecker(checktile);
                     if(tile!='n'&&checktile[0]!=targetData[0]&&checktile[0]!=startData[0])
@@ -528,6 +554,7 @@ public class Chess
                         break;
                     }
                 }
+                x++;
                 if(check==false)
                 {
                     move(pawn,startData,targetData);
@@ -537,7 +564,6 @@ public class Chess
             {
                 for(int i=startData[1];i>targetData[0];i--)
                 {
-                    ++x;
                     int[]checktile={startData[0],startData[1]-x};
                     char tile=tileChecker(checktile);
                     if(tile!='n'&&checktile[1]!=targetData[1]&&checktile[1]!=startData[1])
@@ -547,6 +573,7 @@ public class Chess
                         break;
                     }
                 }
+                x++;
                 if(check==false)
                 {
                     move(pawn,startData,targetData);
@@ -557,7 +584,7 @@ public class Chess
                 invalidator(Thread.currentThread().getStackTrace()[1].getLineNumber());
             }
         }
-        else if(pawn==whitePawn[5]|pawn==blackPawn[5])//pawn
+        else if(pawn==whitePawn[5]|pawn==blackPawn[5]&&allowFreeMovement==false)//pawn
         {
             if(activePlayer=='w')
             {
@@ -642,8 +669,8 @@ public class Chess
     }
     static void eventCheck()
     {
-        boolean win=winCondition();
-        if(win)
+        boolean checkmate=checkmateCondition();
+        if(checkmate)
         {
             result();
         }
@@ -667,11 +694,11 @@ public class Chess
     {
         if(activePlayer=='w')
         {
-            System.out.println(playerOne+" win the game!");
+            System.out.println("Checkmate, "+playerOne+" win the game!");
         }
         else if(activePlayer=='b')
         {
-            System.out.println(playerTwo+" win the game!");
+            System.out.println("Checkmate, "+playerTwo+" win the game!");
         }
         System.exit(0);
     }
@@ -715,9 +742,9 @@ public class Chess
         }
         return check;
     }
-    static boolean winCondition()
+    static boolean checkmateCondition()
     {
-        boolean win=true;
+        boolean checkmate=true;
         if(activePlayer=='w')
         {
             for(int i=0;i<board[0].length;i++)
@@ -726,7 +753,7 @@ public class Chess
                 {
                     if(board[i][j]==blackPawn[0])
                     {
-                        win=false;
+                        checkmate=false;
                         break;
                     }
                 }
@@ -740,12 +767,12 @@ public class Chess
                 {
                     if(board[i][j]==whitePawn[0])
                     {
-                        win=false;
+                        checkmate=false;
                         break;
                     }
                 }
             }
         }
-        return win;
+        return checkmate;
     }
 }
